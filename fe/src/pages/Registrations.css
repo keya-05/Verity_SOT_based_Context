@@ -17,7 +17,7 @@ h2 {
     margin-top: 0%;
 
 }
-.LoginForm {
+.LoginForm, .RegisterForm {
   display: flex;
   flex-direction: column;
   justify-content: center;/*vertcally bcoz flex dir is column, else horizontal*/

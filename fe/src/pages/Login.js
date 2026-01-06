@@ -1,7 +1,8 @@
 import React, { use } from 'react';
-import './Login.css';
+import './Registrations.css';
 import { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
+import { Link } from 'react-router-dom';
 
 function Login() {
 
@@ -13,6 +14,9 @@ function Login() {
         event.preventDefault();
         // Handle login logic here
         //send rqst to backend to verify-later
+        if (username & password) {
+            <Link to="/Dashboard"></Link>
+        }
      }
     return (
         <div>
@@ -57,7 +61,7 @@ function Login() {
                     </div>
                 </p>
                 <p>Dont have an account?  
-                <a href=''>Signup</a></p>
+                <Link to="/Register">Signup</Link></p>
             </form>
         </div>
     );
