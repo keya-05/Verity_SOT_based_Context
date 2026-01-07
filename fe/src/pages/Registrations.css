@@ -39,6 +39,38 @@ input {
     color: #a1b7b3;
 }
 
+/* 1. The container that holds both the input and the button */
+.password-wrapper {
+    position: relative; /* This allows the button to be placed relative to this box */
+    width: 100%;        /* Match the width of your other inputs */
+    display: flex;      /* Helps align items if needed */
+    justify-content: center;
+}
+
+/* 2. Make sure the input fills the wrapper */
+.password-wrapper input {
+    width: 100%;       /* Full width */
+    padding-right: 40px; /* IMPORTANT: Space on the right so text doesn't go under the icon */
+    box-sizing: border-box; /* Ensures padding is included in width calculation */
+}
+
+/* 3. The floating eye button */
+.toggle-password {
+    position: absolute; /* Takes it out of the normal flow */
+    right: 10px;        /* Stick it 10px from the right edge */
+    top: 50%;           /* Move it down 50% */
+    transform: translateY(-50%); /* Center it vertically perfectly */
+    
+    background: none;   /* Remove button background */
+    border: none;       /* Remove button border */
+    cursor: pointer;    /* Hand cursor on hover */
+    font-size: 1.2rem;  /* Size of the emoji */
+    padding: 0;
+    z-index: 2;         /* Ensure it sits on top of the input */
+    height: 20px;
+    width: 20px;
+}
+
 button {
     padding: 10px;
     background-color: #d9eeea;

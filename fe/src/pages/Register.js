@@ -1,13 +1,30 @@
 import React from "react";
 import './Registrations.css';
 import { useState } from 'react'; 
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Dashboard from "./Dashboard.js";
 
 function Register () {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
+    const [showPassword, setshowPassword] = useState(false);
+
+    const navigate = useNavigate();
+
+    const validations = [
+        { check: password.length >= 8, message: "8 chars," },
+        { check: /[A-Z]/.test(password), message: "uppercase letter," },
+        { check: /[a-z]/.test(password), message: "lowercase letter," },
+        { check: /[0-9]/.test(password), message: "number," },
+        { check: /[@$!%*?&]/.test(password), message: "special char (@$!%*?&)" }
+    ];
+
+    const isPasswordValid = validations.every((rule) => rule.check);
+
+    const failedRules = validations.filter(rule => !rule.check);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -18,9 +35,11 @@ function Register () {
         }
         //send rqst to backend to create account-later
 
-        if (!username) {
-            <Link to="/Dashboard"></Link>
+        if (!isPasswordValid) {
+            alert("Please fix the password errors.");
+            return;
         }
+        navigate('/Dashboard');
     }
 
     return (
@@ -45,17 +64,37 @@ function Register () {
                     onChange={(e)=> setEmail(e.target.value)}
                 />
                 <br />
-                <input 
-                    placeholder='Password'
-                    type="password"
-                    id="password"
-                    name="password"
-                    value={password}
-                    onChange={(e)=> setPassword(e.target.value)}
-                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
-                    required
+                <div className="password-wrapper">
+                    <input 
+                        placeholder='Password'
+                        type={showPassword ? "text": "password" }
+                        id="password"
+                        name="password"
+                        value={password}
+                        onChange={(e)=> setPassword(e.target.value)}
+                        required
 
-                />
+                    />
+                    <button 
+                        type="button" 
+                        className="toggle-password"
+                        onClick={() => setshowPassword(!showPassword)}
+                    >
+                        { showPassword ? 
+                            <img src="/images/hide.png" alt="Hide" style={{width:'20px', height:'20px'}} /> : 
+                            <img src="/images/view.png" alt="View" style={{width:'20px', height:'20px'}} /> 
+                        }
+                    </button>
+                </div>
+                {password && (
+                    <div className="validation-box">
+                        {failedRules.map((rule, index) => (
+                             <span key={index} style={{ color: 'red', fontSize: '12px' }}>
+                                 {rule.message}
+                            </span>
+                        ))}
+                    </div>
+                )}
                 <br />
                 <input 
                     placeholder='Confirm Password'
