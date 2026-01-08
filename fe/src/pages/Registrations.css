@@ -111,3 +111,27 @@ a {
     color: #d9eeea;
     font-weight: bold;
 }
+
+.Dashboard-Container {
+    width: 97vw; /* Forces it to be the full width of the screen */
+    height: 100vh; /* Optional: Full height */
+    box-sizing: border-box; /* Prevents scrolling if you add padding */
+}
+
+.Navbar {
+    display: flex;
+    background-color: #235347;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 10px 0 10px;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.Profile {
+    margin-right: 5px;
+    height:35px;
+    width:35px;
+    border-radius: 50px;
+}

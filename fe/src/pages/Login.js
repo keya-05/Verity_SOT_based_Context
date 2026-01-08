@@ -3,6 +3,7 @@ import './Registrations.css';
 import { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { Link } from 'react-router-dom';
+import Login_Check from '../../be/src/controllers/AuthController';
 
 function Login() {
 
@@ -14,7 +15,7 @@ function Login() {
         event.preventDefault();
         // Handle login logic here
         //send rqst to backend to verify-later
-        if (username & password) {
+        if (Login_Check(username, password)) {
             <Link to="/Dashboard"></Link>
         }
      }

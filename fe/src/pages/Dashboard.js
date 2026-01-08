@@ -2,8 +2,13 @@ import React from "react";
 
 function Dashboard() {
     return (
-        <div>
-            <h2>Welcome</h2>
+        <div className="Dashboard-Container">
+            <div className="Navbar">
+                <h2>Verity</h2>
+                <button className="Profile">
+                    <img src="" />
+                </button>
+            </div>
         </div>
     );
 }
