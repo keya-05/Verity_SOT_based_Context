@@ -2,8 +2,7 @@ import React, { use } from 'react';
 import './Registrations.css';
 import { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
-import { Link } from 'react-router-dom';
-import Login_Check from '../../be/src/controllers/AuthController';
+import { Link,useNavigate } from 'react-router-dom';
 
 function Login() {
 
@@ -11,12 +10,33 @@ function Login() {
     //function name- setUsername to change the state
     const [password, setPassword] = useState('');
 
-     const handleSubmit = (event) => {
+    const navigate = useNavigate();
+
+     const handleSubmit = async (event) => {
         event.preventDefault();
-        // Handle login logic here
-        //send rqst to backend to verify-later
-        if (Login_Check(username, password)) {
-            <Link to="/Dashboard"></Link>
+        
+        try {
+            const response = await fetch('http://localhost:8000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            }); 
+            const data = await response.json(); // Parse backend response
+
+            if (response.ok) {
+                // Success!
+                console.log("Login Success:", data);
+                
+                // 5. Redirect the user to Dashboard
+                navigate('/Dashboard'); 
+            } else {
+                // Failure (Wrong password, etc.)
+                alert(data.message || "Login failed");
+            }
+        } catch (error) { 
+            console.error('Error during login:', error);
         }
      }
     return (

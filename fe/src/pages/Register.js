@@ -26,7 +26,7 @@ function Register () {
 
     const failedRules = validations.filter(rule => !rule.check);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         // Handle registration logic here
         if (password !== confirmPassword) {
@@ -39,7 +39,30 @@ function Register () {
             alert("Please fix the password errors.");
             return;
         }
-        navigate('/Dashboard');
+
+        try {
+            const response =await fetch('http://localhost:8000/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', 
+                },
+                body: JSON.stringify({ username, password, email }),
+            }); 
+            
+            const data = await response.json(); // Parse backend response
+
+            if (response.ok) {
+                // Success!
+                console.log("Login Success:", data);
+                
+                navigate('/Dashboard'); 
+            } else {
+                alert(data.message || "Login failed");
+            }
+        } catch (error) { 
+            console.error('Error during registration:', error   
+            )
+        }
     }
 
     return (

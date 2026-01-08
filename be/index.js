@@ -1,10 +1,13 @@
 import express from 'express'; // Changed from require
 import dotenv from 'dotenv';   // Changed from require
 import router from './src/routes/AuthRoutes.js';
+import cors from 'cors';
 
 dotenv.config(); 
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 

@@ -4,7 +4,7 @@ import { Login, Register } from '../controllers/AuthController.js'; // Import yo
 const router = express.Router();
 
 // This defines the HTTP Verb (POST) and the endpoint path
-router.get('/Login', Login); 
+router.post('/Login', Login); 
 router.post('/Register',Register);
 
 
