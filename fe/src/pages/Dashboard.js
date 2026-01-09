@@ -1,5 +1,13 @@
 import React from "react";
 
+function HandleModelClick() {
+    console.log("Model button clicked");
+}
+
+function HandleIngestClick() {
+    console.log("Ingest button clicked");
+}
+
 function Dashboard() {
     return (
         <div className="Dashboard-Container">
@@ -8,6 +16,22 @@ function Dashboard() {
                 <button className="Profile">
                     <img src="" />
                 </button>
+            </div>
+            <div className="Main-Content">
+                <div className="Left-Container">
+                    <h1>Welcome to Verity</h1>
+                    <p>Your AI-powered document assistant.
+                        Hierarchical View.
+                    </p>
+                </div>
+                <div className="Right-Container">
+                    <div className="Model-Button" onClick={HandleModelClick}>
+                        Ask me anything.
+                    </div>
+                    <div className="Ingest-Button" onClick={HandleIngestClick}>
+                        Ingest Documents.
+                    </div>
+                </div>
             </div>
         </div>
     );
