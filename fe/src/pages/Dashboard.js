@@ -1,4 +1,5 @@
 import React from "react";
+import FileExplorer from "../components/FileExplorer.js";
 
 function HandleModelClick() {
     console.log("Model button clicked");
@@ -23,6 +24,9 @@ function Dashboard() {
                     <p>Your AI-powered document assistant.
                         Hierarchical View.
                     </p>
+                    <div className="File-Explorer-Container">
+                        <FileExplorer />
+                    </div>
                 </div>
                 <div className="Right-Container">
                     <div className="Model-Button" onClick={HandleModelClick}>

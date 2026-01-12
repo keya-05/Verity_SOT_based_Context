@@ -1,1 +1,2 @@
 @react-oauth/google
+lucide-react
