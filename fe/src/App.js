@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import './App.css';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
+import Login from './common/Login';
+import Register from './common/Register';
+import Dashboard from './admin/Dashboard';
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 

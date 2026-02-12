@@ -1,0 +1,113 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0eee9;
+    margin: 5px;
+    padding: 5px;
+    text-align: center;
+    display: flex;             
+    justify-content: center;   
+    align-items: center;       
+    min-height: 100vh;
+    color: #d9eeea;
+
+}
+
+h2 {
+    text-align: center;
+    margin-top: 0%;
+
+}
+.LoginForm, .RegisterForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;/*vertcally bcoz flex dir is column, else horizontal*/
+  width: 500px;
+  border: 2px solid #282727;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: #235347;
+  
+}
+
+input {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #163832;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #163832;
+    color: #a1b7b3;
+}
+
+/* 1. The container that holds both the input and the button */
+.password-wrapper {
+    position: relative; /* This allows the button to be placed relative to this box */
+    width: 100%;        /* Match the width of your other inputs */
+    display: flex;      /* Helps align items if needed */
+    justify-content: center;
+}
+
+/* 2. Make sure the input fills the wrapper */
+.password-wrapper input {
+    width: 100%;       /* Full width */
+    padding-right: 40px; /* IMPORTANT: Space on the right so text doesn't go under the icon */
+    box-sizing: border-box; /* Ensures padding is included in width calculation */
+}
+
+/* 3. The floating eye button */
+.toggle-password {
+    position: absolute; /* Takes it out of the normal flow */
+    right: 10px;        /* Stick it 10px from the right edge */
+    top: 50%;           /* Move it down 50% */
+    transform: translateY(-50%); /* Center it vertically perfectly */
+    
+    background: none;   /* Remove button background */
+    border: none;       /* Remove button border */
+    cursor: pointer;    /* Hand cursor on hover */
+    font-size: 1.2rem;  /* Size of the emoji */
+    padding: 0;
+    z-index: 2;         /* Ensure it sits on top of the input */
+    height: 20px;
+    width: 20px;
+}
+
+button {
+    padding: 10px;
+    background-color: #d9eeea;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Login.css */
+
+.divider {
+    display: flex;        /* Aligns the lines and text in a row */
+    align-items: center;  /* Vertically centers the lines */
+    color: #d9eeea;          /* Text color */
+    margin: 20px 0;       /* Spacing above and below the whole row */
+    font-weight: bold;    /* Makes the text bold */
+}
+
+/* This creates the lines */
+.divider::before,
+.divider::after {
+    content: "";          /* Necessary for pseudo-elements to render */
+    flex: 1;              /* Makes the lines stretch to fill space */
+    border-bottom: 2px solid #d9eeea; /* The actual line style */
+}
+
+/* Adds space between the lines and the text */
+.divider::before {
+    margin-right: 10px;
+}
+
+.divider::after {
+    margin-left: 10px;
+}
+
+a {
+    color: #d9eeea;
+    font-weight: bold;
+}

@@ -1,2 +1,6 @@
 @react-oauth/google
 lucide-react
+
+# about us
+#homepage-login
+# then next page on to user folder or admin folder based on privileges/role

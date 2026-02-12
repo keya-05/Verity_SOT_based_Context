@@ -1,0 +1,60 @@
+
+.Dashboard-Container {
+    width: 97vw; /* Forces it to be the full width of the screen */
+    height: 100vh; /* Optional: Full height */
+    box-sizing: border-box; /* Prevents scrolling if you add padding */
+}
+
+.Navbar {
+    display: flex;
+    background-color: #235347;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 10px 0 10px;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.Profile {
+    margin-right: 5px;
+    height:35px;
+    width:35px;
+    border-radius: 50px;
+}
+
+.Main-Content {
+    display: flex;           
+    justify-content: space-between;
+    margin: 20px 0 20px 0;
+    padding: 0 2.5%;
+    
+}
+
+.Left-Container {
+    width: 45%;
+    color: black;
+}
+
+.Right-Container {
+    width: 45%;
+}
+
+.Model-Button, .Ingest-Button {
+    background-color: #235347;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    width: 100%;
+    height: 60px;
+    margin: 10px auto; /* Centers the button horizontally */
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Model-Button:hover, .Ingest-Button:hover {
+    background-color: #1a443a;
+}
