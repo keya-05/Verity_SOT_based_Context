@@ -2,7 +2,7 @@ import React from "react";
 import './Registrations.css';
 import { useState } from 'react'; 
 import { useNavigate } from 'react-router-dom';
-import Dashboard from "../admin/Dashboard.js";
+import AdminDashboard from "../admin/AdminDashboard.js";
 
 function Register () {
     const [username, setUsername] = useState('');
@@ -55,7 +55,7 @@ function Register () {
                 // Success!
                 console.log("Login Success:", data);
                 
-                navigate('/Dashboard'); 
+                navigate('/AdminDashboard'); 
             } else {
                 alert(data.message || "Login failed");
             }

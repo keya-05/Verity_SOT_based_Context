@@ -30,7 +30,7 @@ function Login() {
                 console.log("Login Success:", data);
                 
                 // 5. Redirect the user to Dashboard
-                navigate('/Dashboard'); 
+                navigate('/AdminDashboard'); 
             } else {
                 // Failure (Wrong password, etc.)
                 alert(data.message || "Login failed");

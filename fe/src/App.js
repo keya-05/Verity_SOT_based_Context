@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import Login from './common/Login';
 import Register from './common/Register';
-import Dashboard from './admin/Dashboard';
+import AdminDashboard from './admin/AdminDashboard';
 
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
@@ -13,7 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/Register" element={<Register />} />
-        <Route path ="/Dashboard" element={<Dashboard />} />
+        <Route path ="/AdminDashboard" element={<AdminDashboard />} /> // redirect based on role- change needs to be made
       </Routes>
     </Router>
   );

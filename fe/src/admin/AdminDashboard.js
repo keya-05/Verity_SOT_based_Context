@@ -10,7 +10,7 @@ function HandleIngestClick() {
     console.log("Ingest button clicked");
 }
 
-function Dashboard() {
+function AdminDashboard() {
     return (
         <div className="Dashboard-Container">
             <div className="Navbar">
@@ -42,4 +42,4 @@ function Dashboard() {
     );
 }
 
-export default Dashboard;
+export default AdminDashboard;
