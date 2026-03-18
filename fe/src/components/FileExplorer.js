@@ -1,25 +1,35 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Folder, FileText, Trash2, Plus, ChevronRight, ChevronDown } from 'lucide-react';
 
 // --- 1. THE UTILITY: Tree Builder ---
+// Converts Flat MongoDB array to Nested Tree
 const buildTree = (items) => {
+  // If items is not an array (e.g., it's null or an error object), return an empty tree
+  if (!items || !Array.isArray(items)) {
+    return [];
+  }
+
   const map = {};
   const tree = [];
+
   items.forEach((item) => {
-    map[item.id] = { ...item, children: [] };
+    const id = item._id || item.id;
+    map[id] = { ...item, id, children: [] };
   });
+
   items.forEach((item) => {
+    const id = item._id || item.id;
     if (item.parentId && map[item.parentId]) {
-      map[item.parentId].children.push(map[item.id]);
+      map[item.parentId].children.push(map[id]);
     } else {
-      tree.push(map[item.id]);
+      tree.push(map[id]);
     }
   });
+
   return tree;
 };
 
-// --- 2. THE RECURSIVE COMPONENT ---
-// Added 'isAdmin' prop here
+// --- 2. THE RECURSIVE COMPONENT (FileNode) ---
 const FileNode = ({ node, onAdd, onDelete, isAdmin }) => {
   const [isOpen, setIsOpen] = useState(false);
   const isFolder = node.type === 'folder';
@@ -41,66 +51,49 @@ const FileNode = ({ node, onAdd, onDelete, isAdmin }) => {
   };
 
   return (
-    <div style={{ marginLeft: '20px', marginTop: '8px' }}>
+    <div style={{ marginLeft: '20px', marginTop: '5px' }}>
       <div 
         onClick={() => isFolder && setIsOpen(!isOpen)}
         style={{ 
           display: 'flex', 
           alignItems: 'center', 
           cursor: isFolder ? 'pointer' : 'default',
-          padding: '8px 12px',
-          borderRadius: '6px',
-          backgroundColor: '#ffffff',
+          padding: '6px',
+          borderRadius: '4px',
+          backgroundColor: '#f9f9f9',
           border: '1px solid #eee',
-          marginBottom: '4px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+          marginBottom: '2px'
         }}
       >
-        <span style={{ marginRight: '10px', display: 'flex', alignItems:'center' }}>
+        <span style={{ marginRight: '8px', display: 'flex', alignItems:'center' }}>
           {isFolder ? (
-            isOpen ? <ChevronDown size={18} color="#235347" /> : <ChevronRight size={18} color="#235347" />
-          ) : <span style={{width: 18}} />}
-          
-          {isFolder ? <Folder size={18} color="#235347" fill="#23534722" /> : <FileText size={18} color="#666" />}
+            isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />
+          ) : <span style={{width: 16}} />}
+          {isFolder ? <Folder size={16} color="#235347" /> : <FileText size={16} color="#6b7280" />}
         </span>
 
-        <span style={{ fontWeight: isFolder ? '600' : '400', flexGrow: 1, color: '#333' }}>
+        <span style={{ fontWeight: isFolder ? 'bold' : 'normal', flexGrow: 1, color: '#333' }}>
           {node.name}
         </span>
 
-        {/* --- ROLE BASED ACTIONS --- */}
         {isAdmin && (
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '8px' }}>
             {isFolder && (
-              <button 
-                onClick={handleAddClick} 
-                title="Add Item"
-                style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#235347' }}
-              >
-                <Plus size={18} />
+              <button onClick={handleAddClick} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'green' }}>
+                <Plus size={16} />
               </button>
             )}
-            <button 
-              onClick={handleDeleteClick} 
-              title="Delete"
-              style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#d32f2f' }}
-            >
-              <Trash2 size={18} />
+            <button onClick={handleDeleteClick} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'red' }}>
+              <Trash2 size={16} />
             </button>
           </div>
         )}
       </div>
 
       {isFolder && isOpen && node.children && (
-        <div style={{ borderLeft: '1.5px solid #23534733', marginLeft: '10px' }}>
+        <div style={{ borderLeft: '1px solid #ccc' }}>
           {node.children.map((child) => (
-            <FileNode 
-              key={child.id} 
-              node={child} 
-              onAdd={onAdd} 
-              onDelete={onDelete} 
-              isAdmin={isAdmin} // Pass role down
-            />
+            <FileNode key={child.id} node={child} onAdd={onAdd} onDelete={onDelete} isAdmin={isAdmin} />
           ))}
         </div>
       )}
@@ -108,71 +101,97 @@ const FileNode = ({ node, onAdd, onDelete, isAdmin }) => {
   );
 };
 
-// --- 3. THE MAIN CONTAINER ---
+// --- 3. THE MAIN CONTAINER (FileExplorer) ---
 export default function FileExplorer({ isAdmin }) {
-  const [fileData, setFileData] = useState([
-    { id: '1', name: 'Root Folder', type: 'folder', parentId: null },
-    { id: '2', name: 'Company Policy', type: 'folder', parentId: '1' },
-    { id: '3', name: 'Resources', type: 'folder', parentId: '1' },
-    { id: '4', name: 'Handbook.pdf', type: 'file', parentId: '2' },
-    { id: '5', name: 'Logo.png', type: 'file', parentId: '3' },
-  ]);
+  const [fileData, setFileData] = useState([]);
+  const userId = localStorage.getItem('userId');
+  const role = localStorage.getItem('role');
+
+  const fetchFiles = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/files/explorer?userId=${userId}&role=${role}`);
+      const data = await response.json();
+      
+      // CRITICAL: Only update state if the data is actually an array
+      if (response.ok && Array.isArray(data)) {
+        setFileData(data);
+      } else {
+        console.error("Backend did not return an array:", data);
+        setFileData([]); // Reset to empty array on error
+      }
+    } catch (error) {
+      console.error("Error fetching files:", error);
+      setFileData([]);
+    }
+  };
+
+  useEffect(() => {
+    // Only fetch if we have a userId and role
+    if (userId && role) {
+      fetchFiles();
+    }
+  }, [userId, role]);
+
+  const handleAdd = async (parentId, name, type) => {
+    try {
+      const response = await fetch('http://localhost:8000/api/files/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, type, parentId, ownerId: userId, isPublic: isAdmin })
+      });
+      if (response.ok) fetchFiles();
+    } catch (error) {
+      console.error("Error adding file:", error);
+    }
+  };
+
+  const handleDelete = async (itemId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/files/${itemId}`, { method: 'DELETE' });
+      if (response.ok) fetchFiles();
+    } catch (error) {
+      console.error("Error deleting file:", error);
+    }
+  };
 
   const treeData = useMemo(() => buildTree(fileData), [fileData]);
 
-  const handleAdd = (parentId, name, type) => {
-    const newItem = { id: Date.now().toString(), name, type, parentId };
-    setFileData([...fileData, newItem]);
-  };
-
-  const handleDelete = (itemId) => {
-    const getDescendants = (id) => {
-      const children = fileData.filter(item => item.parentId === id);
-      let ids = children.map(c => c.id);
-      children.forEach(c => { ids = [...ids, ...getDescendants(c.id)]; });
-      return ids;
-    };
-    const idsToDelete = [itemId, ...getDescendants(itemId)];
-    setFileData(fileData.filter(item => !idsToDelete.includes(item.id)));
-  };
-
   return (
-    <div style={{ fontFamily: 'inherit' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-        <h3 style={{ margin: 0, color: '#235347' }}>Document Hierarchy</h3>
-        
-        {/* Only show Add Root button if Admin */}
-        {isAdmin && (
-          <button 
-            onClick={() => {
-                const name = prompt("Enter Root Folder Name:");
-                if(name) handleAdd(null, name, 'folder');
-            }}
-            style={{ 
-                backgroundColor: '#235347', 
-                color: 'white', 
-                border: 'none', 
-                padding: '8px 15px', 
-                borderRadius: '5px', 
-                cursor: 'pointer',
-                fontWeight: 'bold'
-            }}
-          >
-            + New Root
-          </button>
-        )}
-      </div>
+    <div style={{ padding: '10px' }}>
+      {isAdmin && (
+        <button 
+          onClick={() => {
+            const name = prompt("Enter Root Folder Name:");
+            if(name) handleAdd(null, name, 'folder');
+          }}
+          style={{ 
+            marginBottom: '15px', 
+            padding: '8px 15px', 
+            backgroundColor: '#235347', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '5px', 
+            cursor: 'pointer' 
+          }}
+        >
+          + Add Root Folder
+        </button>
+      )}
       
-      <div style={{ maxHeight: '380px', overflowY: 'auto' }}>
-        {treeData.map((node) => (
-          <FileNode 
-            key={node.id} 
-            node={node} 
-            onAdd={handleAdd} 
-            onDelete={handleDelete} 
-            isAdmin={isAdmin} // Pass role down
-          />
-        ))}
+      <div style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '8px', minHeight: '200px' }}>
+        {treeData.length > 0 ? (
+          treeData.map((node) => (
+            <FileNode 
+              key={node.id} 
+              node={node} 
+              onAdd={handleAdd} 
+              onDelete={handleDelete} 
+              isAdmin={isAdmin} 
+            />
+          ))
+        ) : (
+          <p style={{ textAlign: 'center', color: '#888' }}>No documents found.</p>
+        )}
       </div>
     </div>
   );

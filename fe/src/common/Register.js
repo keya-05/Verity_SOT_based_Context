@@ -7,6 +7,7 @@ import AdminDashboard from "../admin/AdminDashboard.js";
 function Register () {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
+    const [role, setRole] = useState('user'); // Default to 'user'
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -86,6 +87,16 @@ function Register () {
                     value={email}
                     onChange={(e)=> setEmail(e.target.value)}
                 />
+                <br />
+                <select 
+                    value={role} 
+                    onChange={(e) => setRole(e.target.value)}
+                    className="role-select"
+                    style={{width: '100%', padding: '10px', marginBottom: '10px'}}
+                >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
                 <br />
                 <div className="password-wrapper">
                     <input 

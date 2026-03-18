@@ -1,26 +1,24 @@
 import logger from '../utils/logger.js';
-// Import the repo functions we just made
 import { findUserByCredentials, createUser } from '../repositories/AuthRepo.js'; 
 
 export const Login = async (req, res) => {
     try {
         const { username, password } = req.body;
-
-        // 1. Call Repository to get data
         const user = await findUserByCredentials(username, password);
 
-        // 2. Decide response based on data
         if (user) {
-            logger.info(`User ${username} logged in`);
+            logger.info(`User ${username} logged in as ${user.role}`);
             return res.status(200).json({ 
                 message: "Login Successful", 
-                user 
+                user: {
+                    id: user._id,
+                    username: user.username,
+                    role: user.role // Frontend uses this to redirect to /admin or /dashboard
+                } 
             });
         } else {
             logger.warn(`Failed login attempt for ${username}`);
-            return res.status(401).json({ 
-                message: "Invalid credentials" 
-            });
+            return res.status(401).json({ message: "Invalid credentials" });
         }
     } catch (error) {
         logger.error(error, "Login Error");
@@ -30,12 +28,11 @@ export const Login = async (req, res) => {
 
 export const Register = async (req, res) => {
     try {
-        const { username, password, email } = req.body;
+        const { username, password, email, role } = req.body;
 
-        // 1. Call Repository
-        const userId = await createUser(username, password, email);
+        // Pass role to creator (defaults to 'user' if not provided)
+        const userId = await createUser(username, password, email, role);
 
-        // 2. Send Success
         logger.info(`New user registered: ${username}`);
         return res.status(201).json({ 
             message: "User Registered Successfully", 
@@ -43,8 +40,8 @@ export const Register = async (req, res) => {
         });
 
     } catch (error) {
-        // Handle duplicate entry error (e.g., username already exists)
-        if (error.code === 'ER_DUP_ENTRY') {
+        // MongoDB duplicate key error code is 11000
+        if (error.code === 11000) {
             return res.status(409).json({ message: "Username or Email already exists" });
         }
         logger.error(error, "Registration Error");

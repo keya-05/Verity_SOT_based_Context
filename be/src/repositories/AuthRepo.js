@@ -1,18 +1,17 @@
-import db from '../models/db.js';
+import User from '../models/User.js';
 
 export const findUserByCredentials = async (username, password) => {
-    // Return the query promise directly
-    const query = "SELECT * FROM users WHERE username = ? AND password = ?";
-    const [rows] = await db.query(query, [username, password]);
-    
-    // Return the user object if found, or null
-    return rows.length > 0 ? rows[0] : null;
+    // MongoDB findOne returns the full document including the 'role'
+    return await User.findOne({ username, password });
 };
 
-export const createUser = async (username, password, email) => {
-    const query = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
-    const [result] = await db.query(query, [username, password, email]);
-    
-    // Return the new ID
-    return result.insertId;
+export const createUser = async (username, password, email, role = 'user') => {
+    const newUser = new User({
+        username,
+        password,
+        email,
+        role
+    });
+    const savedUser = await newUser.save();
+    return savedUser._id;
 };

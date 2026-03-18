@@ -1,33 +1,33 @@
-import express from 'express'; // Changed from require
-import dotenv from 'dotenv';   // Changed from require
-import router from './src/routes/AuthRoutes.js';
+import express from 'express';
 import cors from 'cors';
-import pinoHttp from 'pino-http';
+import dotenv from 'dotenv';
+import connectDB from './src/models/db.js'; 
+import authRoutes from './src/routes/AuthRoutes.js';
+import fileRoutes from './src/routes/FileRoutes.js';
 import logger from './src/utils/logger.js';
 
-
-dotenv.config(); 
+dotenv.config();
 
 const app = express();
 
-app.use(pinoHttp({ logger }));
+// 1. Connect to MongoDB
+connectDB();
 
-app.use(cors());
+// 2. Middleware
+app.use(cors()); // Allows your React frontend to talk to this backend
+app.use(express.json()); // Allows the backend to read JSON from requests
 
-app.use(express.json());
+// 3. Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/files', fileRoutes); 
 
-// Routes
-app.use('/api/auth', router);
-
-const PORT = process.env.PORT || 8000; 
-
+// 4. Start Server
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-  logger.info(`Server is running on port ${PORT}`);
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    logger.info(`Server started on port ${PORT}`);
 });
 
-//startbnusing pinoLogger 
-//then loggin levels setting debug, info, warning, error
-//add try/catch blocks in controllers and log errors appropriately 
-//all data base logic into repositoroty class only
+
 //.env should have all application configurations, like env is dev or prod. 
-//read env variables in one file to set values into global variables with defult values as appropriate.
+//read env variables in one file to set values into global variables with default values as appropriate.

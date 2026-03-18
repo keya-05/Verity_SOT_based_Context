@@ -12,33 +12,36 @@ function Login() {
 
     const navigate = useNavigate();
 
-     const handleSubmit = async (event) => {
-        event.preventDefault();
-        
-        try {
-            const response = await fetch('http://localhost:8000/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            }); 
-            const data = await response.json(); // Parse backend response
+     const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        const response = await fetch('http://localhost:8000/api/auth/Login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password, }) // state variables from your form
+        });
 
-            if (response.ok) {
-                // Success!
-                console.log("Login Success:", data);
-                
-                // 5. Redirect the user to Dashboard
-                navigate('/AdminDashboard'); 
+        const data = await response.json();
+
+        if (response.ok) {
+            // Save to browser storage
+            localStorage.setItem('userId', data.user.id);
+            localStorage.setItem('role', data.user.role);
+            localStorage.setItem('username', data.user.username);
+
+            // Redirect based on role
+            if (data.user.role === 'admin') {
+                navigate('/adminDashboard');
             } else {
-                // Failure (Wrong password, etc.)
-                alert(data.message || "Login failed");
+                navigate('/userDashboard');
             }
-        } catch (error) { 
-            console.error('Error during login:', error);
+        } else {
+            alert(data.message);
         }
-     }
+    } catch (error) {
+        console.error("Connection error:", error);
+    }
+};
     return (
         <div>
             <form className='LoginForm' onSubmit={handleSubmit}>
