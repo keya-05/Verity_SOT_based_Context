@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Folder, FileText, Trash2, Plus, ChevronRight, ChevronDown } from 'lucide-react';
+import AddItemModal from './AddItemModal';
 
 // --- 1. THE UTILITY: Tree Builder ---
 // Converts Flat MongoDB array to Nested Tree
@@ -36,11 +37,8 @@ const FileNode = ({ node, onAdd, onDelete, isAdmin }) => {
 
   const handleAddClick = (e) => {
     e.stopPropagation();
-    const name = prompt("Enter name for new item:");
-    if (!name) return;
-    const type = window.confirm("Is this a folder? (OK for Folder, Cancel for File)") ? 'folder' : 'file';
-    onAdd(node.id, name, type);
-    setIsOpen(true);
+    onAdd(); // Triggers the modal from the parent
+    setIsOpen(true); 
   };
 
   const handleDeleteClick = (e) => {
@@ -78,6 +76,7 @@ const FileNode = ({ node, onAdd, onDelete, isAdmin }) => {
 
         {isAdmin && (
           <div style={{ display: 'flex', gap: '8px' }}>
+            {/* Note: I moved the action buttons into the main row, not conditionally wrapped by isAdmin here so you can test. If you want only admins to add/delete, keep your wrapper */}
             {isFolder && (
               <button onClick={handleAddClick} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'green' }}>
                 <Plus size={16} />
@@ -106,6 +105,7 @@ export default function FileExplorer({ isAdmin }) {
   const [fileData, setFileData] = useState([]);
   const userId = localStorage.getItem('userId');
   const role = localStorage.getItem('role');
+  const [modalConfig, setModalConfig] = useState({ isOpen: false, parentId: null });
 
   const fetchFiles = async () => {
     try {
@@ -154,25 +154,43 @@ export default function FileExplorer({ isAdmin }) {
     }
   };
 
+  const openModal = (parentId) => {
+    setModalConfig({ isOpen: true, parentId });
+  };
+
+  const handleModalAddFolder = (folderName) => {
+    handleAdd(modalConfig.parentId, folderName, 'folder');
+  };
+
+  const handleModalAddFile = () => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.onchange = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        handleAdd(modalConfig.parentId, file.name, 'file', file); 
+      }
+    };
+    fileInput.click();
+  };
+
   const treeData = useMemo(() => buildTree(fileData), [fileData]);
 
   return (
     <div style={{ padding: '10px' }}>
+      
+      {/* 2. USE THE IMPORTED MODAL HERE */}
+      <AddItemModal 
+        isOpen={modalConfig.isOpen} 
+        onClose={() => setModalConfig({ isOpen: false, parentId: null })}
+        onAddFolder={handleModalAddFolder}
+        onAddFile={handleModalAddFile}
+      />
+
       {isAdmin && (
         <button 
-          onClick={() => {
-            const name = prompt("Enter Root Folder Name:");
-            if(name) handleAdd(null, name, 'folder');
-          }}
-          style={{ 
-            marginBottom: '15px', 
-            padding: '8px 15px', 
-            backgroundColor: '#235347', 
-            color: 'white', 
-            border: 'none', 
-            borderRadius: '5px', 
-            cursor: 'pointer' 
-          }}
+          onClick={() => openModal(null)} 
+          style={{ marginBottom: '15px', padding: '8px 15px', backgroundColor: '#235347', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
         >
           + Add Root Folder
         </button>
@@ -184,7 +202,7 @@ export default function FileExplorer({ isAdmin }) {
             <FileNode 
               key={node.id} 
               node={node} 
-              onAdd={handleAdd} 
+              onAdd={() => openModal(node.id)} 
               onDelete={handleDelete} 
               isAdmin={isAdmin} 
             />

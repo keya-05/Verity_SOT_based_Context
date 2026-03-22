@@ -1,18 +1,9 @@
 import File from '../models/File.js';
 
-export const getFilesByRole = async (userId, role) => {
-    // If Admin: Return every single file in the DB
-    if (role === 'admin') {
-        return await File.find({});
-    }
-
-    // If User: Return only files they own OR files marked as public
-    return await File.find({
-        $or: [
-            { ownerId: userId },
-            { isPublic: true }
-        ]
-    });
+// Fetch all files for a specific organization
+export const getFilesByOrgCode = async (orgCode) => {
+    // We sort by 'type' so folders appear before files in the UI
+    return await File.find({ orgCode }).sort({ type: -1, name: 1 });
 };
 
 export const addFileEntry = async (fileData) => {

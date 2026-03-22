@@ -5,13 +5,14 @@ export const findUserByCredentials = async (username, password) => {
     return await User.findOne({ username, password });
 };
 
-export const createUser = async (username, password, email, role = 'user') => {
+export const createUser = async (username, password, email, role , orgCode) => {
     const newUser = new User({
         username,
         password,
         email,
-        role
+        role: role || 'user',
+        orgCode
     });
     const savedUser = await newUser.save();
-    return savedUser._id;
+    return savedUser;
 };

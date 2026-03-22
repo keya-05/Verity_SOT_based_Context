@@ -21,6 +21,10 @@ const fileSchema = new mongoose.Schema({
         ref: 'User', // Reference to the user who created it
         required: true
     },
+    orgCode: { 
+        type: String, 
+        required: true 
+    },
     isPublic: {
         type: Boolean,
         default: false // If true, all users can see it. If false, only owner/admin.

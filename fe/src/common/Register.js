@@ -2,6 +2,7 @@ import React from "react";
 import './Registrations.css';
 import { useState } from 'react'; 
 import { useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google'
 import AdminDashboard from "../admin/AdminDashboard.js";
 
 function Register () {
@@ -10,6 +11,7 @@ function Register () {
     const [role, setRole] = useState('user'); // Default to 'user'
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [orgCode, setOrgCode] = useState('');
 
     const [showPassword, setshowPassword] = useState(false);
 
@@ -47,18 +49,36 @@ function Register () {
                 headers: {
                     'Content-Type': 'application/json', 
                 },
-                body: JSON.stringify({ username, password, email }),
+                body: JSON.stringify({ username, password, email, role, orgCode }),
             }); 
             
             const data = await response.json(); // Parse backend response
 
             if (response.ok) {
-                // Success!
-                console.log("Login Success:", data);
+                console.log("Registration Success:", data);
                 
-                navigate('/AdminDashboard'); 
+                // 1. Save data to localStorage so the rest of the app knows who is logged in
+                localStorage.setItem('userId', data.userId);
+                localStorage.setItem('role', role);
+                
+                // 2. Handle Admin vs User Navigation
+                if (role === 'admin') {
+                    // Alert the Admin with their new code!
+                    alert(`Success! Your Organization Code is: ${data.orgCode}\n\nPlease save this and share it with your users.`);
+                    
+                    // Save the orgCode to local storage
+                    if (data.orgCode) {
+                        localStorage.setItem('orgCode', data.orgCode);
+                    }
+                    
+                    navigate('/AdminDashboard'); 
+                } else {
+                    // It's a User
+                    localStorage.setItem('orgCode', orgCode); // The one they typed into the form
+                    navigate('/userDashboard');
+                }
             } else {
-                alert(data.message || "Login failed");
+                alert(data.message || "Registration failed");
             }
         } catch (error) { 
             console.error('Error during registration:', error   
@@ -98,6 +118,20 @@ function Register () {
                     <option value="admin">Admin</option>
                 </select>
                 <br />
+                {role === 'user' && (
+                    <>
+                        <input 
+                            placeholder='Organization Code'
+                            type="text"
+                            id="orgCode" 
+                            name="orgCode"
+                            value={orgCode}
+                            onChange={(e)=> setOrgCode(e.target.value)}
+                            required // Make it required only when it's visible
+                        />
+                        <br />
+                    </>
+                )}
                 <div className="password-wrapper">
                     <input 
                         placeholder='Password'
@@ -141,6 +175,25 @@ function Register () {
                 />
                 <br />
                 <button type="submit">Register</button>
+                <div>
+                    <div className='divider'>
+                        Or Continue with
+                    </div>
+                    <div className='SSO' style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+                        <GoogleLogin 
+                            type="icon"
+                            shape="circle"
+                            onSuccess={ 
+                                credentialResponse => {
+                                console.log(credentialResponse);
+                            }}   
+                            onError={() => {
+                                console.log('Login Failed');
+                            }}
+                        />
+
+                    </div>
+                </div>
             </form>
         </div>
     );

@@ -22,6 +22,13 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user' // New registrations default to user
     },
+    orgCode: {
+        type: String, 
+        
+        required: function() {
+            return this.role === 'User';
+        },
+    },
     createdAt: {
         type: Date,
         default: Date.now
